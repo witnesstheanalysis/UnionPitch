@@ -1,0 +1,114 @@
+library(ggplot2)
+library(dplyr)
+
+
+lines <- data.frame (x = c(20,42,60,70,80,98,120,20,25,115,25,115,20,39,57,67,77,95,120,20,25,115,25,115,20,39,57,67,77,95,120),
+                     y = c(0,0,0,0,0,0,0,5,2,2,12,12,15,15,15,15,15,15,15,65,62,62,52,52,55,55,55,55,55,55,55),
+                     xend = c(20,42,60,70,80,98,120,120,25,115,25,115,25,45,63,73,83,102,115,120,25,115,25,115,25,45,63,73,83,102,115),
+                     yend = c(70,70,70,70,70,70,70,5,8,8,18,18,15,15,15,15,15,15,15,65,68,68,58,58,55,55,55,55,55,55,55),
+                     dash = c(1,1,2,1,2,1,1,2,1,1,1,1,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1,1,1,1,1))
+
+lines1 <- lines %>% filter(dash == "1")
+lines2 <- lines %>% filter(dash == "2")
+
+
+#' Title
+#'
+#' @param grass_colour
+#' @param line_colour
+#' @param background_colour
+#' @param goala_colour
+#' @param goalb_colour
+#' @param label_colour
+#' @param BasicFeatures
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#'
+create_UNION_Pitch <- function(grass_colour, line_colour, background_colour, goala_colour,goalb_colour,label_colour, BasicFeatures){
+
+  theme_blankPitch = function(size=12) {
+    theme(
+      #axis.line=element_blank(),
+      axis.text.x=element_blank(),
+      axis.text.y=element_blank(),
+      #axis.ticks.y=element_text(size=size),
+      #axis.ticks=element_blank(),
+      axis.ticks.length=unit(0, "lines"),
+      #axis.ticks.margin=unit(0, "lines"),
+      axis.title.x=element_blank(),
+      axis.title.y=element_blank(),
+      legend.key.size=unit(1.2, "lines"),
+      legend.text=element_text(size=size),
+      legend.title=element_text(size=size, face="bold",hjust=0),
+      # panel.border=element_blank(),
+      panel.grid.major=element_blank(),
+      panel.grid.minor=element_blank(),
+      panel.spacing=element_blank(),
+      plot.margin=unit(c(0, 0, 0, 0), "lines"),
+      plot.title=element_text(size=size*1.2),
+      panel.background=element_rect(fill= background_colour,colour= background_colour),
+      strip.text.x=element_text(size=size*1))}
+
+  ymin <- 0 # minimum width
+  ymax <- 70 # maximum width
+  xmin <- 0 # minimum length
+  xmax <- 140 # maximum length
+
+
+  #Goals
+  glxst <- 20
+  glyst <- 32.5
+  glxed <- 120
+  glyed <- 37.5
+
+  #tramlines
+  srwing <- 17.5
+  rhalfsp <- 35
+  ctre <- 52.5
+
+
+
+  if(BasicFeatures == TRUE){
+    ## initiate the plot, set some boundries to the plot
+    np <- ggplot() + xlim(c(xmin,xmax)) + ylim(c(ymin,ymax)) +
+      theme_blankPitch() +
+      #add lines etc
+      geom_rect(aes(xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax), fill = grass_colour, colour = line_colour) +
+      geom_segment(data = lines1, aes(x = x, y = y, xend = xend, yend = yend), colour = line_colour,size = 0.5) +
+      geom_segment(data = lines2, aes(x = x, y = y, xend = xend, yend = yend), linetype="dashed", colour = line_colour,size = 0.5) +
+      geom_segment(aes(x = glxst, y =  glyst, xend = glxst, yend = glyed),colour = goala_colour, size = 1) +
+      geom_segment(aes(x =glxed, y =  glyst, xend =glxed, yend = glyed),colour = goalb_colour, size = 1) +
+      annotate(geom="text", x= 70, y=2, label="www.witnesstheanalysis.com",color = label_colour,size = 6, alpha = 0.4) +
+      annotate(geom="text", x= 70, y=68, label="www.witnesstheanalysis.com",color = label_colour,size = 6, alpha = 0.4)
+
+  }
+
+  else{
+    ## initiate the plot, set some boundries to the plot
+    np <- ggplot() + xlim(c(xmin,xmax)) + ylim(c(ymin,ymax)) +
+      # add the theme
+      theme_blankPitch() +
+      # add lines etc
+      geom_rect(aes(xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax), fill = grass_colour, colour = line_colour) +
+      geom_segment(data = lines1, aes(x = x, y = y, xend = xend, yend = yend), colour = line_colour,size = 0.5) +
+      geom_segment(data = lines2, aes(x = x, y = y, xend = xend, yend = yend), linetype="dashed", colour = line_colour,size = 0.5) +
+      geom_segment(aes(x = glxst, y =  glyst, xend = glxst, yend = glyed),colour = goala_colour, size = 1) +
+      geom_segment(aes(x =glxed, y =  glyst, xend =glxed, yend = glyed),colour = goalb_colour, size = 1) +
+      geom_segment(aes(x = xmin, y = srwing, xend = xmax, yend = srwing),colour = "blue",linetype="dotted",size = 0.5) +
+      geom_segment(aes(x = xmin, y = rhalfsp, xend = xmax, yend = rhalfsp),colour = "blue",linetype="dotted",size = 0.5) +
+      geom_segment(aes(x = xmin, y = ctre, xend = xmax, yend = ctre),colour = "blue",linetype="dotted",size = 0.5) +
+      geom_segment(aes(x = 42, y = ymin, xend = 42, yend = ymax),colour = "blue",linetype="solid",size = 0.5) +
+      geom_segment(aes(x = 70, y = ymin, xend = 70, yend = ymax),colour = "blue",linetype="solid",size = 0.5) +
+      geom_segment(aes(x = 98, y = ymin, xend = 98, yend = ymax),colour = "blue",linetype="solid",size = 0.5) +
+      annotate(geom="text", x= 70, y=2, label="www.witnesstheanalysis.com",color = label_colour,size = 6, alpha = 0.4) +
+      annotate(geom="text", x= 70, y=68, label="www.witnesstheanalysis.com",color = label_colour,size = 6, alpha = 0.4)
+
+  }
+
+  return(np)}
+
+
+create_UNION_Pitch("#A2CD5A", "white", "black", "blue","red","white", BasicFeatures=TRUE)
